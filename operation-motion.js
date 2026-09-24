@@ -1,7 +1,7 @@
-import {neuronState,neuronMarkup,neuronNarrative,neuronPhase,normState,normMarkup,normNarrative,normPhase} from './microscope.js?v=b55dd29';
-import {demoHeatmap} from './reference-designs.js?v=b55dd29';
-import {calculate,format} from './course.js?v=b55dd29';
-import {clamp} from './space.js?v=b55dd29';
+import {neuronState,neuronMarkup,neuronNarrative,neuronPhase,normState,normMarkup,normNarrative,normPhase} from './microscope.js?v=expanded-space-1';
+import {demoHeatmap} from './reference-designs.js?v=expanded-space-1';
+import {calculate,format} from './course.js?v=expanded-space-1';
+import {clamp} from './space.js?v=expanded-space-1';
 const NS='http://www.w3.org/2000/svg';
 function node(tag,attrs={}){const n=document.createElementNS(NS,tag);for(const [k,v]of Object.entries(attrs))n.setAttribute(k,v);return n;}
 export function operationFrame(model,tensor,row,col,termIndex,fraction){const calc=calculate(model,tensor,row,col);if(!calc)return null;const index=Math.max(0,termIndex)%calc.terms.length,term=calc.terms[index];return {calc,index,term,fraction:clamp(fraction),partial:calc.terms.slice(0,index+1).reduce((s,x)=>s+x.value,0)};}

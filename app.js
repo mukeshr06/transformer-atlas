@@ -1,12 +1,12 @@
-import {canSpatial} from './live-space.js?v=b55dd29';
-import {derivation} from './math.js?v=b55dd29';
-import {vectorPages} from './vector-space.js?v=b55dd29';
-import {teach} from './teaching.js?v=b55dd29';
-import {Transformer,EXAMPLES,VOCAB} from './model.js?v=b55dd29';
-import {buildCourse,locate,hashIndex,calculate,explanation,scopeName,format,conceptLabels,tensorName,ensureScene} from './course.js?v=b55dd29';
-import {buildWorld,Renderer,blockFor} from './architecture.js?v=b55dd29';
-import {clamp} from './space.js?v=b55dd29';
-import {sourceInfo,lessons} from './data.js?v=b55dd29';
+import {canSpatial} from './live-space.js?v=expanded-space-1';
+import {derivation} from './math.js?v=expanded-space-1';
+import {vectorPages} from './vector-space.js?v=expanded-space-1';
+import {teach} from './teaching.js?v=expanded-space-1';
+import {Transformer,EXAMPLES,VOCAB} from './model.js?v=expanded-space-1';
+import {buildCourse,locate,hashIndex,calculate,explanation,scopeName,format,conceptLabels,tensorName,ensureScene} from './course.js?v=expanded-space-1';
+import {buildWorld,Renderer,blockFor} from './architecture.js?v=expanded-space-1';
+import {clamp} from './space.js?v=expanded-space-1';
+import {sourceInfo,lessons} from './data.js?v=expanded-space-1';
 
 const $=id=>document.getElementById(id);
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -94,6 +94,7 @@ function drawLoss(){const canvas=$('loss-chart'),c=canvas.getContext('2d'),width
 function notify(text){clearTimeout(noticeTimer);$('notice').textContent=text;$('notice').hidden=false;noticeTimer=setTimeout(()=>$('notice').hidden=true,3500);}
 
 function microStep(value){manual=true;locked=true;play=false;phase=clamp(value);$('play').textContent='▶';updateCalculation(true);dirty=true;}
+renderer.host.addEventListener('spatial-term',e=>microStep((e.detail.index+.1)/e.detail.count));
 $('micro-progress').oninput=e=>microStep(+e.target.value/1000);
 $('micro-prev').onclick=()=>microStep(phase-1/Math.max(4,calculation?.terms.length||4));
 $('micro-next').onclick=()=>microStep(phase+1/Math.max(4,calculation?.terms.length||4));

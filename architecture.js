@@ -1,10 +1,10 @@
-import {canSpatial} from './live-space.js?v=b55dd29';
-import {LiveNarrative} from './microscope.js?v=b55dd29';
-import {simulationMarkup,diagramKind} from './diagrams.js?v=b55dd29';
-import {VectorSpace,vectorPages} from './vector-space.js?v=b55dd29';
-import {OperationMotion} from './operation-motion.js?v=b55dd29';
-import {clamp} from './space.js?v=b55dd29';
-import {format} from './course.js?v=b55dd29';
+import {canSpatial} from './live-space.js?v=expanded-space-1';
+import {LiveNarrative} from './microscope.js?v=expanded-space-1';
+import {simulationMarkup,diagramKind} from './diagrams.js?v=expanded-space-1';
+import {VectorSpace,vectorPages} from './vector-space.js?v=expanded-space-1';
+import {OperationMotion} from './operation-motion.js?v=expanded-space-1';
+import {clamp} from './space.js?v=expanded-space-1';
+import {format} from './course.js?v=expanded-space-1';
 export const blocks=[
  ['source.embedding',190,570,170,48,'Input|Embedding','embedding'],
  ['target.embedding',550,570,170,48,'Output|Embedding','embedding'],
@@ -76,7 +76,7 @@ export class Renderer{
  resize(){this.w=innerWidth;this.h=innerHeight;this.vector?.render();}
  setWorld(world){
   const changed=this.world?.scene.id!==world.scene.id;this.world=world;this.narrative.update(null);if(changed){this.startTime=this.lastTime||0;this.lastSimulation='';}
-  const t=world.model.tensors.get(world.scene.tensor),active=world.scene.focus||blockFor(t);this.currentTensor=t;this.isVector=vectorPages.has(world.scene.reference)||(this.camera.mode==='3d'&&canSpatial(t,world.scene));this.vector.host.hidden=!this.isVector;
+  const t=world.model.tensors.get(world.scene.tensor),active=world.scene.focus||blockFor(t);this.currentTensor=t;this.isVector=vectorPages.has(world.scene.reference)||(this.camera.mode==='3d'&&canSpatial(t,world.scene));this.vector.host.hidden=!this.isVector;document.body.classList.toggle('spatial-active',this.isVector);
   const content=this.isVector?'':simulationMarkup(world.model,world.scene,world.options);
   if(content!==this.lastSimulation){this.focus.innerHTML=content;this.lastSimulation=content;if(content)this.motion.bind(world.model,world.scene,world.options);}else if(content)this.motion.options=world.options;
   this.focused=!!content;this.focus.hidden=this.isVector||!this.focused;this.svg.style.display=this.isVector||this.focused?'none':'';this.svg.style.opacity='1';this.svg.style.pointerEvents=this.isVector||this.focused?'none':'auto';this.host.dataset.focus=active;
@@ -89,7 +89,7 @@ export class Renderer{
  draw(time=0){
   if(!this.world)return;this.lastTime=time;const elapsed=time-(this.startTime||0),phase=this.world.options.phase||0;
   this.host.classList.toggle('motion-paused',this.reduced||this.paused);this.host.style.setProperty('--glow',this.glow);this.host.style.setProperty('--depth-offset',`${(this.world.options.explode||1)*5}px`);
-  if(this.isVector){const progress=this.reduced?1:phase;this.vector.zoom=Math.min(1.8,this.camera.zoom);this.vector.set(this.world.model,this.world.scene,progress,this.world.options.row||0,this.world.options.col||0);this.narrative.update(this.vector.state.detail);return;}
+  if(this.isVector){const progress=this.reduced?1:phase;this.vector.zoom=this.camera.zoom;this.vector.set(this.world.model,this.world.scene,progress,this.world.options.row||0,this.world.options.col||0);this.narrative.update(this.vector.state.detail);return;}
   this.focus.style.opacity='1';this.focus.style.pointerEvents='auto';this.focus.style.transform=`scale(${this.camera.zoom})`;
   if(this.focused){const frame=this.motion.draw(elapsed,phase,this.reduced);if(frame)this.onTerm?.(frame);this.narrative.update(this.motion.narrative);return;}
   this.svg.style.transform=`scale(${this.camera.zoom})`;this.svg.querySelector('.signal-packets').style.filter=`drop-shadow(0 0 ${this.glow*3}px #8effd8)`;

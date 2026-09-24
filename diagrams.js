@@ -1,9 +1,9 @@
-import {svgSymbols} from './math.js?v=b55dd29';
-import {neuronState,neuronMarkup,neuronPhase,normState,normMarkup,normPhase,attentionMarkup} from './microscope.js?v=b55dd29';
-import {referenceBody} from './reference-designs.js?v=b55dd29';
-import {format,calculate} from './course.js?v=b55dd29';
-import {VOCAB} from './model.js?v=b55dd29';
-import {sourceInfo} from './data.js?v=b55dd29';
+import {svgSymbols} from './math.js?v=expanded-space-1';
+import {neuronState,neuronMarkup,neuronPhase,normState,normMarkup,normPhase,attentionMarkup} from './microscope.js?v=expanded-space-1';
+import {referenceBody} from './reference-designs.js?v=expanded-space-1';
+import {format,calculate} from './course.js?v=expanded-space-1';
+import {VOCAB} from './model.js?v=expanded-space-1';
+import {sourceInfo} from './data.js?v=expanded-space-1';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const colors=['#75cef0','#ade6a3','#ebce77','#c6a3f4','#ed9990'];
 const text=(x,y,s,size=18,color='#cfdfdf',anchor='middle')=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="${color}" font-size="${size}" font-family="${size>23?'Georgia,serif':'Arial,sans-serif'}">${svgSymbols(s)}</text>`;
