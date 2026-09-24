@@ -1,5 +1,5 @@
-import {svgSymbols} from './math.js?v=expanded-space-1';
-import {format} from './course.js?v=expanded-space-1';
+import {svgSymbols} from './math.js?v=expanded-space-2';
+import {format} from './course.js?v=expanded-space-2';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const txt=(x,y,s,size=15,color='#bcdad5')=>`<text x="${x}" y="${y}" fill="${color}" font-size="${size}" text-anchor="middle">${svgSymbols(s)}</text>`;
 export function neuronPhase(id,p){return id.endsWith('.expand')?Math.min(3,Math.floor(p*4)):id.endsWith('.biased')?4:id.endsWith('.relu')?5:6;}

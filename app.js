@@ -1,12 +1,12 @@
-import {canSpatial} from './live-space.js?v=expanded-space-1';
-import {derivation} from './math.js?v=expanded-space-1';
-import {vectorPages} from './vector-space.js?v=expanded-space-1';
-import {teach} from './teaching.js?v=expanded-space-1';
-import {Transformer,EXAMPLES,VOCAB} from './model.js?v=expanded-space-1';
-import {buildCourse,locate,hashIndex,calculate,explanation,scopeName,format,conceptLabels,tensorName,ensureScene} from './course.js?v=expanded-space-1';
-import {buildWorld,Renderer,blockFor} from './architecture.js?v=expanded-space-1';
-import {clamp} from './space.js?v=expanded-space-1';
-import {sourceInfo,lessons} from './data.js?v=expanded-space-1';
+import {canSpatial} from './live-space.js?v=expanded-space-2';
+import {derivation} from './math.js?v=expanded-space-2';
+import {vectorPages} from './vector-space.js?v=expanded-space-2';
+import {teach} from './teaching.js?v=expanded-space-2';
+import {Transformer,EXAMPLES,VOCAB} from './model.js?v=expanded-space-2';
+import {buildCourse,locate,hashIndex,calculate,explanation,scopeName,format,conceptLabels,tensorName,ensureScene} from './course.js?v=expanded-space-2';
+import {buildWorld,Renderer,blockFor} from './architecture.js?v=expanded-space-2';
+import {clamp} from './space.js?v=expanded-space-2';
+import {sourceInfo,lessons} from './data.js?v=expanded-space-2';
 
 const $=id=>document.getElementById(id);
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
