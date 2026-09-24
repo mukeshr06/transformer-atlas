@@ -1,6 +1,6 @@
-import {neuronState,neuronNarrative,neuronPhase} from './microscope.js';
-import {calculate,format} from './course.js';
-import {clamp} from './space.js';
+import {neuronState,neuronNarrative,neuronPhase} from './microscope.js?v=b55dd29';
+import {calculate,format} from './course.js?v=b55dd29';
+import {clamp} from './space.js?v=b55dd29';
 const palette=[[.32,.76,1],[.36,.96,.73],[1,.78,.32],[.77,.54,1],[1,.48,.56]];
 export function canSpatial(t,scene){return !!t&&!scene.visualOnly&&!t.parameterOnly&&t.op!=='tokens';}
 export function liveSpatialState(m,scene,progress,row=0,col=0){

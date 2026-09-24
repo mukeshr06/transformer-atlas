@@ -1,7 +1,7 @@
-import {liveSpatialState} from './live-space.js';
-import {derivation} from './math.js';
-import {calculate} from './course.js';
-import {add,sub,mul,mix,normalize,cross,length,clamp,multiply,lookAt,perspective,modelMatrix,projectPoint} from './space.js';
+import {liveSpatialState} from './live-space.js?v=b55dd29';
+import {derivation} from './math.js?v=b55dd29';
+import {calculate} from './course.js?v=b55dd29';
+import {add,sub,mul,mix,normalize,cross,length,clamp,multiply,lookAt,perspective,modelMatrix,projectPoint} from './space.js?v=b55dd29';
 // These are modeled points, vectors and linear maps, never a texture or traced outline.
 export const vectorPages=new Set([3,4,5,6,8,14,26,27,28,32]);
 const C={blue:[.29,.72,.96],teal:[.34,.94,.79],gold:[1,.78,.28],red:[1,.40,.35],purple:[.70,.51,.98],muted:[.19,.29,.34]};

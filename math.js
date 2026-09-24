@@ -1,4 +1,4 @@
-import {format} from './course.js';
+import {format} from './course.js?v=b55dd29';
 export const escapeMath=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const el=(tag,s)=>`<${tag}>${s}</${tag}>`;
 export const mi=s=>el('mi',escapeMath(s)),mo=s=>el('mo',escapeMath(s)),mn=s=>s===-Infinity?mo('−')+mo('∞'):s===Infinity?mo('∞'):el('mn',escapeMath(typeof s==='number'?format(s,4):s)),mt=s=>el('mtext',escapeMath(s)),row=s=>el('mrow',s),frac=(a,b)=>el('mfrac',row(a)+row(b)),sup=(a,b)=>el('msup',row(a)+row(b)),sub=(a,b)=>el('msub',row(a)+row(b)),sqrt=a=>el('msqrt',a),paren=s=>mo('(')+s+mo(')'),math=s=>`<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">${row(s)}</math>`;

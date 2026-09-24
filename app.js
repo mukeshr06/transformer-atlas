@@ -1,12 +1,12 @@
-import {canSpatial} from './live-space.js';
-import {derivation} from './math.js';
-import {vectorPages} from './vector-space.js';
-import {teach} from './teaching.js';
-import {Transformer,EXAMPLES,VOCAB} from './model.js';
-import {buildCourse,locate,hashIndex,calculate,explanation,scopeName,format,conceptLabels,tensorName,ensureScene} from './course.js';
-import {buildWorld,Renderer,blockFor} from './architecture.js';
-import {clamp} from './space.js';
-import {sourceInfo,lessons} from './data.js';
+import {canSpatial} from './live-space.js?v=b55dd29';
+import {derivation} from './math.js?v=b55dd29';
+import {vectorPages} from './vector-space.js?v=b55dd29';
+import {teach} from './teaching.js?v=b55dd29';
+import {Transformer,EXAMPLES,VOCAB} from './model.js?v=b55dd29';
+import {buildCourse,locate,hashIndex,calculate,explanation,scopeName,format,conceptLabels,tensorName,ensureScene} from './course.js?v=b55dd29';
+import {buildWorld,Renderer,blockFor} from './architecture.js?v=b55dd29';
+import {clamp} from './space.js?v=b55dd29';
+import {sourceInfo,lessons} from './data.js?v=b55dd29';
 
 const $=id=>document.getElementById(id);
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

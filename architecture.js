@@ -1,10 +1,10 @@
-import {canSpatial} from './live-space.js';
-import {LiveNarrative} from './microscope.js';
-import {simulationMarkup,diagramKind} from './diagrams.js';
-import {VectorSpace,vectorPages} from './vector-space.js';
-import {OperationMotion} from './operation-motion.js';
-import {clamp} from './space.js';
-import {format} from './course.js';
+import {canSpatial} from './live-space.js?v=b55dd29';
+import {LiveNarrative} from './microscope.js?v=b55dd29';
+import {simulationMarkup,diagramKind} from './diagrams.js?v=b55dd29';
+import {VectorSpace,vectorPages} from './vector-space.js?v=b55dd29';
+import {OperationMotion} from './operation-motion.js?v=b55dd29';
+import {clamp} from './space.js?v=b55dd29';
+import {format} from './course.js?v=b55dd29';
 export const blocks=[
  ['source.embedding',190,570,170,48,'Input|Embedding','embedding'],
  ['target.embedding',550,570,170,48,'Output|Embedding','embedding'],
