@@ -1,12 +1,12 @@
-import {svgSymbols} from './math.js?v=expanded-space-2';
-import {neuronState,neuronMarkup,neuronPhase,normState,normMarkup,normPhase,attentionMarkup} from './microscope.js?v=expanded-space-2';
-import {referenceBody} from './reference-designs.js?v=expanded-space-2';
-import {format,calculate} from './course.js?v=expanded-space-2';
-import {VOCAB} from './model.js?v=expanded-space-2';
-import {sourceInfo} from './data.js?v=expanded-space-2';
+import {svgSymbols,svgLabel,svgFormula,derivation,calculationRibbon,referenceFormula} from './math.js?v=math-type-1';
+import {neuronState,neuronMarkup,neuronPhase,normState,normMarkup,normPhase,attentionMarkup} from './microscope.js?v=math-type-1';
+import {referenceBody} from './reference-designs.js?v=math-type-1';
+import {format,calculate} from './course.js?v=math-type-1';
+import {VOCAB} from './model.js?v=math-type-1';
+import {sourceInfo} from './data.js?v=math-type-1';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const colors=['#75cef0','#ade6a3','#ebce77','#c6a3f4','#ed9990'];
-const text=(x,y,s,size=18,color='#cfdfdf',anchor='middle')=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="${color}" font-size="${size}" font-family="${size>23?'Georgia,serif':'Arial,sans-serif'}">${svgSymbols(s)}</text>`;
+const text=svgLabel;
 const line=(x,y,xx,yy,color='#8ca8ac')=>`<path class="flow-wire" d="M${x} ${y}L${xx} ${yy}" stroke="${color}" fill="none" stroke-width="1.7" marker-end="url(#flow-arrow)"/>`;
 const group=(content,order=0)=>`<g class="diagram-asset" data-reveal="${order}">${content}</g>`;
 const token=(x,y,s,i=0,w=110)=>`<g class="token-asset"><rect x="${x-w/2}" y="${y-22}" width="${w}" height="44" rx="7" fill="#071014" stroke="${colors[i%colors.length]}" stroke-width="1.3"/>${text(x,y+6,s,20,colors[i%colors.length])}</g>`;
@@ -35,7 +35,7 @@ function bars(values,labels,x,y,w,h,title,probability=false,fixedMax=null){const
  return text(x+w/2,y-30,title,19)+`<path d="M${x} ${baseline}h${w}" stroke="#71898a"/>`+values.map((v,i)=>{const height=Number.isFinite(v)?Math.abs(v)/max*span:0;return group(`<rect class="value-bar" data-baseline="${baseline}" data-negative="${v<0}" x="${x+i*cw+cw*.18}" y="${v<0?baseline:baseline-height}" width="${cw*.64}" height="${height}" fill="${colors[i%3]}" fill-opacity=".7"/>${text(x+(i+.5)*cw,(v<0?baseline+height+17:baseline-height-12),probability?(v*100).toFixed(1)+'%':format(v,3),14,colors[i%3])}${text(x+(i+.5)*cw,y+h+27,labels[i]??i,15)}`,i*.1)}).join('');
 }
 function arithmetic(m,t,o){if(!t)return'';const calc=calculate(m,t.id,o.row||0,o.col||0);if(!calc)return'';const terms=calc.terms.slice(0,8),w=Math.min(114,750/Math.max(1,terms.length)),start=500-terms.length*w/2;
- return `<g class="arithmetic-tray">${text(500,506,`${t.label} [${o.row||0}, ${o.col||0}]`,17,'#e5d38c')}${terms.map((term,i)=>`<g class="product-asset ${i===o.term?'active-product':''}" data-reveal="${i*.045}"><rect x="${start+i*w+2}" y="526" width="${w-5}" height="45" rx="5" fill="#0c171b" stroke="${i===o.term?'#edce79':'#264046'}"/>${text(start+(i+.5)*w,552,format(term.value,4),15,i===o.term?'#edce79':'#a5c5cc')}</g>`).join('')}<g class="accumulation-readout">${text(500,607,(calc.additive?'Σ contributions':'Result')+' = '+format(calc.result,6),25,'#bcffe2')}</g>${text(500,638,calc.terms.length>8?'First 8 contributions shown; the result includes all '+calc.terms.length+'. See the explanation for the full sum.':'Select any cell to trace its exact operands · scroll to advance',13,'#69888e')}</g>`;
+ return `<g class="arithmetic-tray">${svgFormula(500,498,derivation(m,calc).match(/<math[\s\S]*?<\/math>/)?.[0]||'',19,'#e5d38c',920,48)}${terms.map((term,i)=>`<g class="product-asset ${i===o.term?'active-product':''}" data-reveal="${i*.045}"><rect x="${start+i*w+2}" y="526" width="${w-5}" height="45" rx="5" fill="#0c171b" stroke="${i===o.term?'#edce79':'#264046'}"/>${text(start+(i+.5)*w,552,format(term.value,4),15,i===o.term?'#edce79':'#a5c5cc')}</g>`).join('')}<g class="accumulation-readout">${svgFormula(500,606,calculationRibbon(calc,o.term||0),23,'#bcffe2',920,65)}</g>${text(500,638,calc.terms.length>8?'First 8 contributions shown; the result includes all '+calc.terms.length+'. See the explanation for the full sum.':'Select any cell to trace its exact operands · scroll to advance',13,'#69888e')}</g>`;
 }
 export function simulationMarkup(m,scene,o={}){
  const t=m.tensors.get(scene.tensor),kind=diagramKind(t,scene);if(kind==='architecture')return'';
@@ -118,5 +118,5 @@ export function simulationMarkup(m,scene,o={}){
  }
  const originalLabel=id.startsWith('learn.')||id.startsWith('backward.')?'Backward pass · chain rule':id.includes('.norm.')||id.includes('residual')?'Add & Norm':id.includes('.ff.')?'Feed Forward':id.includes('.self.')?id.startsWith('dec.')?'Masked Multi-Head Attention':'Multi-Head Attention':id.includes('.cross.')?'Multi-Head Attention · cross':id.startsWith('output.')?'Linear → Softmax':id.includes('position')||id.endsWith('.input')?'Embedding + Positional Encoding':'Embedding';const scope=id.startsWith('enc.')?'ENCODER '+(Number(id.split('.')[1])+1):id.startsWith('dec.')?'DECODER '+(Number(id.split('.')[1])+1):'INPUT / OUTPUT';
  const header=scene.reference?`DRAWING ${String(scene.reference).padStart(2,'0')} / 70 · LIVE ADAPTATION`:'INSIDE THE ARCHITECTURE · LIVE COMPUTATION';
- return `<svg xmlns="http://www.w3.org/2000/svg" class="simulation-svg" viewBox="0 0 1000 680" role="img" aria-label="${esc(scene.title)}"><defs><marker id="flow-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10" fill="#a4d8cd"/></marker></defs><g class="focus-block"><rect x="310" y="6" width="380" height="33" rx="7" fill="#162621" stroke="#8cb889"/>${text(500,27,t?originalLabel:header,15,'#c4e6b1')}${text(295,26,scope,10,'#7ca7a0','end')}</g>${text(500,67,scene.reference?sourceInfo[scene.reference-1][0]:t?.label||scene.title,27,'#e2ede6')}${text(500,99,subtitle,15,'#8fa7af')}${body}${t&&!custom?.hideArithmetic&&!scene.visualOnly?arithmetic(m,t,o):custom?.hideArithmetic||scene.visualOnly?'':text(500,587,'Scroll to follow the information.',20,'#8dd8c3')}</svg>`;
+ return `<svg xmlns="http://www.w3.org/2000/svg" class="simulation-svg" viewBox="0 0 1000 680" role="img" aria-label="${esc(scene.title)}"><defs><marker id="flow-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10" fill="#a4d8cd"/></marker></defs><g class="focus-block"><rect x="310" y="6" width="380" height="33" rx="7" fill="#162621" stroke="#8cb889"/>${text(500,27,t?originalLabel:header,15,'#c4e6b1')}${text(295,26,scope,10,'#7ca7a0','end')}</g>${text(500,67,scene.reference?sourceInfo[scene.reference-1][0]:t?.label||scene.title,27,'#e2ede6')}${text(500,99,subtitle,15,'#8fa7af')}${body}${t&&!custom?.hideArithmetic&&!scene.visualOnly?arithmetic(m,t,o):referenceFormula(scene)?svgFormula(500,603,referenceFormula(scene),25,'#bcffe2',930,78):''}</svg>`;
 }

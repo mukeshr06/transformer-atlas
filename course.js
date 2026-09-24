@@ -1,6 +1,6 @@
-import {introduction,paperLessons,teach} from './teaching.js?v=expanded-space-2';
-import {sourceInfo,sourceLesson,lessons} from './data.js?v=expanded-space-2';
-import {D,DK,EPS,VOCAB} from './model.js?v=expanded-space-2';
+import {introduction,paperLessons,teach} from './teaching.js?v=math-type-1';
+import {sourceInfo,sourceLesson,lessons} from './data.js?v=math-type-1';
+import {D,DK,EPS,VOCAB} from './model.js?v=math-type-1';
 export const format=(x,n=4)=>x===-Infinity?'−∞':x===Infinity?'∞':Number.isFinite(x)?(Math.abs(x)<.5*10**(-n)?0:x).toFixed(n):'—';
 export function scopeName(t){const head=t.head===undefined?'':` · head ${t.head+1}`;return t.scope?.startsWith('enc.')?`Encoder ${+t.scope.split('.')[1]+1}${head}`:t.scope?.startsWith('dec.')?`Decoder ${+t.scope.split('.')[1]+1}${t.cross?' · cross-attention':''}${head}`:t.scope==='source'?'Source sequence':t.scope==='target'?'Shifted target':t.scope==='training'?'Learning from the example':'Next-token prediction';}
 export function tensorName(id){return id.startsWith('@')?id.slice(1).replace(/enc\.(\d+)/,(_,n)=>`Encoder ${+n+1}`).replace(/dec\.(\d+)/,(_,n)=>`Decoder ${+n+1}`).replace(/\.h(\d+)/,(_,n)=>` · head ${+n+1}`).replaceAll('.',' · '):id;}
