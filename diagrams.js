@@ -1,9 +1,9 @@
-import {svgSymbols,svgLabel,svgFormula,derivation,calculationRibbon,referenceFormula} from './math.js?v=math-type-1';
-import {neuronState,neuronMarkup,neuronPhase,normState,normMarkup,normPhase,attentionMarkup} from './microscope.js?v=math-type-1';
-import {referenceBody} from './reference-designs.js?v=math-type-1';
-import {format,calculate} from './course.js?v=math-type-1';
-import {VOCAB} from './model.js?v=math-type-1';
-import {sourceInfo} from './data.js?v=math-type-1';
+import {svgSymbols,svgLabel,svgFormula,derivation,calculationRibbon,referenceFormula} from './math.js?v=math-space-3';
+import {neuronState,neuronMarkup,neuronPhase,normState,normMarkup,normPhase,attentionMarkup} from './microscope.js?v=math-space-3';
+import {referenceBody} from './reference-designs.js?v=math-space-3';
+import {format,calculate} from './course.js?v=math-space-3';
+import {VOCAB} from './model.js?v=math-space-3';
+import {sourceInfo} from './data.js?v=math-space-3';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const colors=['#75cef0','#ade6a3','#ebce77','#c6a3f4','#ed9990'];
 const text=svgLabel;
@@ -61,16 +61,16 @@ export function simulationMarkup(m,scene,o={}){
   [Q,K,V].forEach((tt,i)=>{const yy=115+i*130;body+=group(line(345,316,570,yy+36,colors[i])+mx(tt,600,yy,240,70,['Q · queries','K · keys','V · values'][i]),i*.2)});
  }else if(kind==='heatmap'){
   const original=t?.shape[1]>1?t:A;const sourceConvention=scene.reference&&scene.reference>=17&&scene.reference<=25;const tt=sourceConvention?{...original,transposed:true,shape:[original.shape[1],original.shape[0]],values:original.values[0].map((_,i)=>original.values.map(row=>row[i]))}:original;
-  subtitle=sourceConvention?scene.reference===21?'Column-vector form: A = softmax_columns(KᵀQ / √dₖ), Z = VA':'Source layout: queries across columns · keys down rows · select a cell to trace it':'Queries down · keys across · each cell is an actual pairwise interaction';
+  subtitle=sourceConvention?scene.reference===21?'Column-vector form: $A = softmax_{columns}({K^T Q}/√{d_k})$, $Z = VA$':'Source layout: queries across columns · keys down rows · select a cell to trace it':'Queries down · keys across · each cell is an actual pairwise interaction';
   body=mx(tt,266,166,450,270,tt.label);
   for(let i=0;i<tt.shape[0];i++)body+=text(242,166+(i+.5)*270/tt.shape[0]+5,words[i]||i,16,colors[i%3],'end');
   for(let i=0;i<tt.shape[1];i++)body+=text(266+(i+.5)*450/tt.shape[1],121,keyWords[i]||i,16,colors[i%3]);
   if(tt.id.endsWith('.A')&&!sourceConvention)tt.values.forEach((row,i)=>body+=text(785,166+(i+.5)*270/tt.shape[0]+5,'Σ '+format(row.reduce((s,x)=>s+x,0),3),18,'#a3e4ba'));
   if(sourceConvention){const x=266+Math.min(o.row||0,tt.shape[1]-1)*450/tt.shape[1];body+=`<rect x="${x}" y="166" width="${450/tt.shape[1]}" height="270" fill="none" stroke="#eed266" stroke-width="2"/>`;if([18,19].includes(scene.reference)){const selected={...original,shape:[original.shape[1],1],values:original.values[o.row||0].map(v=>[v]),columnVector:true,sourceRow:o.row||0};body+=line(733,300,780,300,'#e8d57b')+mx(selected,803,166,102,270,'Selected query');}}
-  body+=text(500,471,tt.id.endsWith('.masked')?'−∞ blocks a position before softmax':tt.id.endsWith('.scores')?'Raw scores can be negative; they are not probabilities.':'Bright cells carry larger mixing weights.',16,'#9bb8bb');
+  body+=text(500,459,tt.id.endsWith('.masked')?'−∞ blocks a position before softmax':tt.id.endsWith('.scores')?'Raw scores can be negative; they are not probabilities.':tt.id.endsWith('.scaled')?'Scaled query–key scores before softmax.':'Bright cells carry larger mixing weights.',16,'#9bb8bb');
  }else if(kind==='bars'){
   const r=Math.min(o.row||0,A.shape[0]-1),before=get(att+'.scaled'),values=before.values[r],after=A.values[r];subtitle='Compare the scores with their normalized weights';
-  body=bars(values,words,75,197,330,195,'Scaled scores')+line(446,299,550,299)+text(499,274,'softmax',16,'#eace78')+bars(after,words,600,197,330,195,'Attention weights',true)+text(764,458,'Σ weights = '+format(after.reduce((s,x)=>s+x,0),6),18,'#a7e7b8');
+  body=bars(values,words,75,197,330,195,'Scaled scores')+line(446,299,550,299)+text(499,274,'softmax',16,'#eace78')+bars(after,words,600,197,330,195,'Attention weights',true)+text(764,458,'$∑_j a_{ij} = '+format(after.reduce((s,x)=>s+x,0),6)+'$',18,'#a7e7b8');
  }else if(kind==='mix'){
   subtitle='Each attention weight scales an entire value vector';const r=Math.min(o.row||0,A.shape[0]-1),cw=800/A.shape[1];
   body=A.values[r].map((v,i)=>group(token(100+cw*(i+.5),147,keyWords[i]||i,i,120)+text(100+cw*(i+.5),210,format(v,4)+' ×',26,colors[i%3])+mx({...V,shape:[1,V.shape[1]],values:[V.values[i]],rowMap:[i]},100+cw*i+20,248,cw-40,65,'value '+i)+line(100+cw*(i+.5),344,500,417,colors[i%3]),i*.16)).join('')+mx({...Z,shape:[1,Z.shape[1]],values:[Z.values[r]],rowMap:[r]},350,430,300,46,'weighted sum');
@@ -83,7 +83,7 @@ export function simulationMarkup(m,scene,o={}){
   const serial=kind==='recurrent',pts=ww.map((w,i)=>serial?[85+i*830/Math.max(1,ww.length-1),250]:[500+290*Math.cos(-Math.PI/2+i*2*Math.PI/ww.length),300+125*Math.sin(-Math.PI/2+i*2*Math.PI/ww.length)]);
   pts.forEach(([x,y],i)=>pts.forEach(([xx,yy],j)=>{if(i===j||serial&&j!==i+1)return;const weight=t&&!story?A.values[i%A.shape[0]][j%A.shape[1]]:i===5&&j===1?.9:.16;body+=`<path class="graph-link" d="M${x} ${y}Q500 ${serial?180:290} ${xx} ${yy}" fill="none" stroke="${colors[i%3]}" stroke-width="${1+weight*4}" opacity="${.13+weight*.65}"/>`;}));
   body+=pts.map(([x,y],i)=>group(`<circle cx="${x}" cy="${y}" r="${serial?34:37}" fill="#071313" stroke="${colors[i%colors.length]}" stroke-width="1.6"/>${text(x,y+6,ww[i],ww[i].length>6?15:21,colors[i%colors.length])}`,i*.07)).join('');
-  if(serial)body+=text(500,429,'hₜ = f(hₜ₋₁, xₜ) · later states depend on earlier states',21,'#dec978');
+  if(serial)body+=text(500,429,'$hₜ = f(hₜ₋₁, xₜ)$ · later states depend on earlier states',21,'#dec978');
  }else if(['geometry','analogy'].includes(kind)){
   subtitle='Two coordinates shown · the full embedding has four dimensions';const E=get('source.lookup'),coords=E.values.map(v=>[500+v[0]*260,315-v[1]*190]);
   for(let i=-4;i<=4;i++)body+=`<path d="M${500+i*70} 145V450M160 ${300+i*35}H850" stroke="#183339" stroke-width=".8"/>`;

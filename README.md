@@ -30,3 +30,7 @@ arithmetic, reverse-mode gradients and clipped SGD. This is an educational
 miniature, not the paper's trained model or a general translator.
 
 Architecture attribution: Vaswani et al., [Attention Is All You Need](https://arxiv.org/abs/1706.03762).
+
+## Equation rendering checks
+
+Run `node --test math.test.mjs` (Node.js 20 or later). The checks cover fraction grouping, Unicode scripts, escaped text, mathematical display layout, and the formulas and animation labels across all 394 chapters. Equations use the bundled OpenType MATH font and native MathML, with no external typesetting service.

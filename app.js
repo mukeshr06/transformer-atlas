@@ -1,16 +1,16 @@
-import {canSpatial} from './live-space.js?v=math-type-1';
-import {derivation,richNotation,referenceFormula} from './math.js?v=math-type-1';
-import {vectorPages} from './vector-space.js?v=math-type-1';
-import {teach} from './teaching.js?v=math-type-1';
-import {Transformer,EXAMPLES,VOCAB} from './model.js?v=math-type-1';
-import {buildCourse,locate,hashIndex,calculate,explanation,scopeName,format,conceptLabels,tensorName,ensureScene} from './course.js?v=math-type-1';
-import {buildWorld,Renderer,blockFor} from './architecture.js?v=math-type-1';
-import {clamp} from './space.js?v=math-type-1';
-import {sourceInfo,lessons} from './data.js?v=math-type-1';
+import {canSpatial} from './live-space.js?v=math-space-3';
+import {derivation,richNotation,referenceFormula} from './math.js?v=math-space-3';
+import {vectorPages} from './vector-space.js?v=math-space-3';
+import {teach} from './teaching.js?v=math-space-3';
+import {Transformer,EXAMPLES,VOCAB} from './model.js?v=math-space-3';
+import {buildCourse,locate,hashIndex,calculate,explanation,scopeName,format,conceptLabels,tensorName,ensureScene} from './course.js?v=math-space-3';
+import {buildWorld,Renderer,blockFor} from './architecture.js?v=math-space-3';
+import {clamp} from './space.js?v=math-space-3';
+import {sourceInfo,lessons} from './data.js?v=math-space-3';
 
 const $=id=>document.getElementById(id);
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-$('learning-panel').append($('caption'),$('calculation'));$('world-instruction').insertAdjacentHTML('beforeend','<div id="concept-formula" class="derivation"></div>');
+$('learning-panel').append($('caption'),$('calculation'));
 const model=new Transformer();model.setText('rain feeds rivers');
 const renderer=new Renderer($('space'),$('labels'));
 const preference=matchMedia('(prefers-reduced-motion: reduce)');
@@ -35,7 +35,7 @@ function equationMarkup(calc){return derivation(model,calc);}
 function scene(){return course[Math.max(0,index)];}
 function setScene(next){
   if(next===index)return;index=next;sceneEpoch++;explanationBeat='';pinnedBeat=null;manual=false;play=false;locked=true;selected={row:0,col:0};worldKey='';lastEquation='';termIndex=-1;
-  const s=scene();$('learning-panel').scrollTop=0;$('scene-scope').textContent=s.group;$('scene-title').textContent=s.title;
+  const s=scene();$('learning-panel').scrollTop=0;$('scene-scope').textContent=s.group;$('scene-title').innerHTML=richNotation(s.title);
   const record=model.tensors.get(s.tensor);$('scene-description').textContent=s.why||s.body;
   $('caption').classList.remove('entering');
   $('scene-count').textContent=`${index+1} / ${course.length}`;
@@ -127,7 +127,7 @@ for(const id of ['operation-list','references'])$(id).addEventListener('click',e
 $('chapters').addEventListener('click',e=>{const b=e.target.closest('[data-concept]');if(!b)return;const entry={attention:'solution-attention',context:'problem-context',walkthrough:'complete'}[b.dataset.concept];if(entry){closeDialog('atlas');goToId(entry);return;}let next=course.findIndex(s=>!s.reference&&s.concept===b.dataset.concept);if(next<0)next=course.findIndex(s=>s.concept===b.dataset.concept);closeDialog('atlas');if(next<0){const archived=course.archive.find(s=>s.concept===b.dataset.concept);if(archived){goToId(archived.id);return;}}goTo(Math.max(0,next));});
 $('read-more').onclick=()=>{
   const s=scene(),t=s.visualOnly?null:model.tensors.get(s.tensor);$('detail-scope').textContent=s.group;$('detail-title').textContent=s.title;
-  $('detail-body').innerHTML=`<h3>Why this step exists</h3><p>${escape(s.why||s.body)}</p><h3>How it works</h3><p>${richNotation(s.how||explanation(t,model))}</p><h3>What the result means</h3><p>${richNotation(s.result||'Follow the highlighted route into the next block.')}</p>`+(t?`<div class="formula">${derivation(model,calculation)}</div><p>Selected coordinate: row ${selected.row}, column ${selected.col}. The output tensor has shape ${t.shape.join(' × ')}. Every visible operand is read from the current forward pass.</p><h3>Follow the dependencies</h3><ul>${t.inputs.map(id=>`<li>${escape(model.tensors.get(id)?.label||id)} · ${model.tensors.get(id)?.shape.join(' × ')}</li>`).join('')}</ul>`:'<p>The encoder contextualizes the source. The decoder combines a shifted target prefix with the final encoder memory. Each stack has '+model.config.layers+' blocks with distinct learned parameters.</p>')+`<h3>Try it</h3><p>Open Experiment to change the attention mask or temperature. Use All values to inspect any tensor and edit learned embeddings or weights. A change runs the complete model again, including all downstream probabilities and gradients.</p>`;
+  $('detail-body').innerHTML=`<h3>Why this step exists</h3><p>${richNotation(s.why||s.body)}</p><h3>How it works</h3><p>${richNotation(s.how||explanation(t,model))}</p><h3>What the result means</h3><p>${richNotation(s.result||'Follow the highlighted route into the next block.')}</p>`+(t?`<div class="formula">${derivation(model,calculation)}</div><p>Selected coordinate: row ${selected.row}, column ${selected.col}. The output tensor has shape ${t.shape.join(' × ')}. Every visible operand is read from the current forward pass.</p><h3>Follow the dependencies</h3><ul>${t.inputs.map(id=>`<li>${escape(model.tensors.get(id)?.label||id)} · ${model.tensors.get(id)?.shape.join(' × ')}</li>`).join('')}</ul>`:'<p>The encoder contextualizes the source. The decoder combines a shifted target prefix with the final encoder memory. Each stack has '+model.config.layers+' blocks with distinct learned parameters.</p>')+`<h3>Try it</h3><p>Open Experiment to change the attention mask or temperature. Use All values to inspect any tensor and edit learned embeddings or weights. A change runs the complete model again, including all downstream probabilities and gradients.</p>`;
   if(t?.op==='backward'||t?.op==='gradient')$('detail-body').innerHTML+=`<h3>Where the contributions come from</h3><p>For a selected scalar x, the chain rule is ∂L/∂x = Σ (∂L/∂y) · (∂y/∂x), over every operation y that consumes x. Multiplication by a second input has that input as its local derivative; addition has derivative 1; ReLU has derivative 0 or 1. Shared weights receive a sum over all their uses.</p><ul>${calculation.terms.map(term=>`<li>${escape(term.operation||'Contribution')} ${term.node===undefined?'':`· scalar node ${term.node}`}: incoming ${format(term.upstream,6)} × local ${format(term.derivative,6)} = ${format(term.value,6)}</li>`).join('')}</ul>`;
   if(s.reference)$('detail-body').innerHTML+=`<h3>Reference ${s.reference}</h3><p>${escape(sourceInfo[s.reference-1][1])}</p><p>The live miniature uses 4 features and 2 heads; the source may show different dimensions or a different example. Every token, matrix, vector and connection is a frontend component. The motion follows operations within the diagram. Vector-space concepts use a real 3D coordinate system; illustrative coordinates are labeled.</p>`;
   openDialog('detail');

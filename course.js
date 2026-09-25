@@ -1,6 +1,6 @@
-import {introduction,paperLessons,teach} from './teaching.js?v=math-type-1';
-import {sourceInfo,sourceLesson,lessons} from './data.js?v=math-type-1';
-import {D,DK,EPS,VOCAB} from './model.js?v=math-type-1';
+import {introduction,paperLessons,teach} from './teaching.js?v=math-space-3';
+import {sourceInfo,sourceLesson,lessons} from './data.js?v=math-space-3';
+import {D,DK,EPS,VOCAB} from './model.js?v=math-space-3';
 export const format=(x,n=4)=>x===-Infinity?'−∞':x===Infinity?'∞':Number.isFinite(x)?(Math.abs(x)<.5*10**(-n)?0:x).toFixed(n):'—';
 export function scopeName(t){const head=t.head===undefined?'':` · head ${t.head+1}`;return t.scope?.startsWith('enc.')?`Encoder ${+t.scope.split('.')[1]+1}${head}`:t.scope?.startsWith('dec.')?`Decoder ${+t.scope.split('.')[1]+1}${t.cross?' · cross-attention':''}${head}`:t.scope==='source'?'Source sequence':t.scope==='target'?'Shifted target':t.scope==='training'?'Learning from the example':'Next-token prediction';}
 export function tensorName(id){return id.startsWith('@')?id.slice(1).replace(/enc\.(\d+)/,(_,n)=>`Encoder ${+n+1}`).replace(/dec\.(\d+)/,(_,n)=>`Decoder ${+n+1}`).replace(/\.h(\d+)/,(_,n)=>` · head ${+n+1}`).replaceAll('.',' · '):id;}
@@ -9,7 +9,7 @@ export function explanation(t,m){const ins=t.inputs.map(id=>m.tensors.get(id)),s
  backward:`Read the computation in reverse. For the selected coordinate, multiply each consumer’s loss gradient by that consumer’s local derivative, then sum every contribution. These are the exact scalar operations from the current forward pass. Select another coordinate to trace its chain rule.`,
  tokens:`This example uses a small word-level vocabulary. Each token selects a vocabulary index; an ID is a lookup address, not a measure of meaning. Real language models commonly use subword tokens.`,
  lookup:`Each token selects a learned row from the embedding table. These ${s} values begin the numerical journey. Change an embedding coordinate and every downstream calculation is recomputed.`,
- position:`For dimension 2i use sin(position / 10000^(2i/4)); for 2i+1 use cosine. Different frequencies give each position a different four-coordinate signature.`,
+ position:`For dimension $2i$ use $sin(p/{10000^{2i/4}})$, where $p$ is the token position; for $2i+1$ use cosine. Different frequencies give each position a different four-coordinate signature.`,
  matmul:`Every output cell is a dot product: multiply one input row by one weight column, then add ${ins[0]?.shape[1]||D} products. Select a cube to inspect its exact operands.`,
  add:`Add matching coordinates. A residual route keeps the previous representation while a sublayer contributes an update; the shape stays ${s}.`,
  sub:`Subtract the scaled gradient from the current parameter. This is a preview of the next SGD update; “Train one step” applies it to every active learned parameter.`,
@@ -86,14 +86,14 @@ export function calculate(model,id,row=0,col=0){
   else if(t.op==='scale'){terms.push({a:ref(a,row,col),value:result,label:`${f(at(a,row,col))} ÷ ${f(t.divisor)}`});formula=terms[0].label;}
   else if(t.op==='multiplyScalar'){terms.push({a:ref(a,row,col),value:result,label:`${f(at(a,row,col))} × ${f(t.scalar)}`});formula=terms[0].label;}
   else if(t.op==='rowDivide'||t.op==='rowSubtract'){const av=at(a,row,col),bv=at(b,row,0);terms.push({a:ref(a,row,col),b:ref(b,row,0),value:result,label:`${f(av)} ${t.op==='rowDivide'?'÷':'−'} ${f(bv)}`});formula=terms[0].label;}
-  else if(['rowSum','rowMean','mean'].includes(t.op)){const values=t.op==='mean'?a.values.flat():a.values[row];values.forEach((v,j)=>terms.push({a:ref(a,t.op==='mean'?j:row,t.op==='mean'?0:j),value:v/(t.op==='rowSum'?1:values.length),label:f(v)}));formula=`(${values.map(f).join(' + ')})${t.op==='rowSum'?'':` ÷ ${values.length}`}`;}
+  else if(['rowSum','rowMean','mean'].includes(t.op)){const values=t.op==='mean'?a.values.flat():a.values[row];values.forEach((v,j)=>terms.push({a:ref(a,t.op==='mean'?j:row,t.op==='mean'?0:j),value:v/(t.op==='rowSum'?1:values.length),label:t.op==='rowSum'?f(v):`${f(v)} ÷ ${values.length}`}));formula=`(${values.map(f).join(' + ')})${t.op==='rowSum'?'':` ÷ ${values.length}`}`;}
   else if(t.op==='affine'){const av=at(a,row,col),gamma=at(b,0,col),beta=at(ins[2],0,col);terms.push({a:ref(a,row,col),b:ref(b,0,col),value:av*gamma,label:`${f(av)} × ${f(gamma)}`},{a:ref(ins[2],0,col),value:beta,label:`+ ${f(beta)}`});formula=terms.map(t=>t.label).join(' ');}
   else if(t.op==='lookup'){const sourceRow=t.indices[row];terms.push({a:ref(b,sourceRow,col),value:result,label:`embedding[${sourceRow}, ${col}]`});formula=terms[0].label;}
   else if(t.op==='concat'){let offset=col,which=0;while(offset>=ins[which].shape[1]){offset-=ins[which].shape[1];which++;}terms.push({a:ref(ins[which],row,offset),value:result,label:`head ${which+1}, feature ${offset}`});formula=terms[0].label;}
   else if(t.op==='transpose'){terms.push({a:ref(a,col,row),value:result,label:`K[${col}, ${row}]`});formula=terms[0].label;}
   else if(t.op==='mask'){const allowed=t.allowed[row][col];terms.push({a:ref(a,row,col),value:result,label:allowed?'visible position':'masked position'});formula=allowed?`${f(at(a,row,col))} + 0`:`${f(at(a,row,col))} + (−∞)`;}
   else if(t.op==='position'){const i=Math.floor(col/2),fn=col%2?'cos':'sin';formula=`${fn}(${row} ÷ 10000^(${2*i}/${D}))`;terms.push({value:result,label:formula});}
-  else if(t.op==='exp'||t.op==='relu'||t.op==='square'||t.op==='std'||t.op==='neglog'){const v=at(a,row,col);formula=t.op==='exp'?`exp(${f(v)})`:t.op==='relu'?`max(0, ${f(v)})`:t.op==='square'?`${f(v)}²`:t.op==='std'?`√(${f(v)} + ${EPS})`:`−log(${f(v)})`;terms.push({a:ref(a,row,col),value:result,label:formula});}
+  else if(t.op==='exp'||t.op==='relu'||t.op==='square'||t.op==='std'||t.op==='neglog'){const v=at(a,row,col);formula=t.op==='exp'?`exp(${f(v)})`:t.op==='relu'?`max(0, ${f(v)})`:t.op==='square'?`(${f(v)})²`:t.op==='std'?`√(${f(v)} + ${EPS})`:`−log(${f(v)})`;terms.push({a:ref(a,row,col),value:result,label:formula});}
   else if(t.op==='rowmax'){formula=`max(${a.values[row].map(f).join(', ')})`;a.values[row].forEach((v,j)=>terms.push({a:ref(a,row,j),value:v,label:f(v)}));}
   else if(t.op==='gather'){terms.push({a:ref(a,row,t.targets[row]),value:result,label:`p(${VOCAB[t.targets[row]]})`});formula=terms[0].label;}
   else if(t.op==='tokens'){formula=`vocabulary.indexOf(“${t.tokens[row]}”)`;terms.push({value:result,label:formula});}
